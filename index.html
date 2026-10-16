@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Uçak Oyunu</title>
+
+<style>
+body{
+margin:0;
+overflow:hidden;
+background:black;
+font-family:Arial;
+color:white;
+text-align:center;
+}
+
+#menu{
+position:absolute;
+width:100%;
+top:40%;
+}
+
+#indir{
+font-size:50px;
+padding:20px 60px;
+cursor:pointer;
+}
+
+#level{
+position:absolute;
+top:10px;
+left:10px;
+font-size:30px;
+display:none;
+}
+
+canvas{
+display:none;
+background:#87ceeb;
+}
+
+#hack{
+display:none;
+position:fixed;
+left:0;
+top:0;
+width:100%;
+height:100%;
+color:white;
+font-size:70px;
+font-weight:bold;
+padding-top:200px;
+animation:blink .25s infinite;
+}
+
+@keyframes blink{
+0%{background:red;}
+50%{background:black;}
+100%{background:red;}
+}
+</style>
+</head>
+
+<body>
+
+<div id="menu">
+<h1>✈️ UÇAK OYUNU</h1>
+<button id="indir" onclick="baslat()">
+İNDİR
+</button>
+</div>
+
+<div id="level">Level: 1</div>
+
+<canvas id="game" width="1000" height="500"></canvas>
+
+<div id="hack">
+⚠️ HACKLENDİN ⚠️
+<br>
+SİSTEM ELE GEÇİRİLDİ
+</div>
+
+<script>
+
+let oyunBasladi=false;
+let level=1;
+
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
+
+let plane={
+x:100,
+y:250,
+w:60,
+h:30
+};
+
+let obstacle={
+x:1000,
+y:Math.random()*450,
+w:50,
+h:80,
+speed:5
+};
+
+let keys={};
+
+document.addEventListener("keydown",
+e=>keys[e.key]=true);
+
+document.addEventListener("keyup",
+e=>keys[e.key]=false);
+
+function baslat(){
+
+document.getElementById("menu").style.display="none";
+
+canvas.style.display="block";
+
+document.getElementById("level").style.display="block";
+
+oyunBasladi=true;
+
+}
+
+function draw(){
+
+ctx.clearRect(0,0,
+canvas.width,
+canvas.height);
+
+ctx.fillStyle="orange";
+
+ctx.fillRect(
+plane.x,
+plane.y,
+plane.w,
+plane.h
+);
+
+ctx.fillStyle="red";
+
+ctx.fillRect(
+obstacle.x,
+obstacle.y,
+obstacle.w,
+obstacle.h
+);
+
+}
+
+function update(){
+
+if(!oyunBasladi)return;
+
+if(keys["w"]||keys["ArrowUp"])
+plane.y-=7;
+
+if(keys["s"]||keys["ArrowDown"])
+plane.y+=7;
+
+obstacle.x-=obstacle.speed;
+
+if(obstacle.x<0){
+
+obstacle.x=1000;
+obstacle.y=Math.random()*420;
+
+level++;
+
+document.getElementById("level").innerHTML=
+"Level: "+level;
+
+obstacle.speed+=0.8;
+}
+
+if(level>=10){
+
+document.getElementById("hack")
+.style.display="block";
+
+canvas.style.display="none";
+
+return;
+}
+
+if(
+plane.x < obstacle.x+obstacle.w &&
+plane.x+plane.w > obstacle.x &&
+plane.y < obstacle.y+obstacle.h &&
+plane.y+plane.h > obstacle.y
+){
+
+alert("Çarptın!");
+
+location.reload();
+
+}
+
+draw();
+
+requestAnimationFrame(update);
+
+}
+
+update();
+
+</script>
+
+</body>
+</html>
